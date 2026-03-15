@@ -16,13 +16,13 @@ use Illuminate\Database\Eloquent\Model;
  * Class MainTopic
  * 
  * @property int $id
- * @property int $form_id
+ * @property int|null $form_id
  * @property string $name
  * @property string $score
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * 
- * @property Formset $formset
+ * @property Formset|null $formset
  * @property Collection|SubTopic[] $sub_topics
  *
  * @package App\Models\Base

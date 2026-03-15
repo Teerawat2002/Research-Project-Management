@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use App\Models\Advisor;
+use App\Models\Major;
 
 class RegisteredUserController extends Controller
 {
@@ -19,7 +20,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        // ดึงข้อมูลจากตาราง majors
+        $majors = Major::all();
+        // dd($majors->all());
+        return view('auth.register', compact('majors'));
     }
 
     /**
@@ -50,13 +54,16 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        // dd($request->all());
+        // ดึงข้อมูลจากตาราง majors
+
         $request->validate([
             'a_id' => ['required', 'string', 'max:255', 'unique:advisors'],
             'a_fname' => ['required', 'string', 'max:255'],
             'a_lname' => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'a_type' => ['required', 'in:advisor,admin,teacher'], // Validate the type
-            'm_id' => ['required', 'in:1,2'], // Validate m_id
+            'm_id' => ['required', 'exists:majors,id'], // Validate m_id
         ]);
 
         $advisors = Advisor::create([
@@ -78,7 +85,7 @@ class RegisteredUserController extends Controller
         // Redirect based on a_type
         switch ($advisors->a_type) {
             case 'admin':
-                return redirect()->route('admin.dashboard');
+                return redirect()->route('admin.advisor.index');
             case 'teacher':
                 return redirect()->route('teacher.dashboard');
             case 'advisor':

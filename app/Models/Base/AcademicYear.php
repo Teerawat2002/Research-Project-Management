@@ -7,7 +7,8 @@
 namespace App\Models\Base;
 
 use App\Models\Calendar;
-use App\Models\Student;
+use App\Models\InvigilatorGroup;
+use App\Models\ProjectGroup;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * 
  * @property Collection|Calendar[] $calendars
- * @property Collection|Student[] $students
+ * @property Collection|InvigilatorGroup[] $invigilator_groups
+ * @property Collection|ProjectGroup[] $project_groups
  *
  * @package App\Models\Base
  */
@@ -34,8 +36,13 @@ class AcademicYear extends Model
 		return $this->hasMany(Calendar::class, 'ac_id');
 	}
 
-	public function students()
+	public function invigilator_groups()
 	{
-		return $this->hasMany(Student::class, 'ac_id');
+		return $this->hasMany(InvigilatorGroup::class, 'ac_id');
+	}
+
+	public function project_groups()
+	{
+		return $this->hasMany(ProjectGroup::class, 'ac_id');
 	}
 }

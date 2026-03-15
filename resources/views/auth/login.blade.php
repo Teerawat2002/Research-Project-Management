@@ -1,47 +1,150 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Research exam</title>
 
-        <!-- ID -->
-        <div>
-            <x-input-label for="id" :value="__('ID')" />
-            <x-text-input id="id" class="block mt-1 w-full" type="text" name="id" :value="old('id')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('id')" class="mt-2" />
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body class="font-sans text-gray-900 antialiased bg-gray-50">
+
+    <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <main class="w-full max-w-5xl">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    {{-- LEFT: แบนเนอร์/รูป --}}
+                    <a href="{{ route('welcome') }}" class="block group" aria-label="ไปหน้ารวมโครงงาน" title="ไปหน้ารวมโครงงาน">
+                        <div class="relative">
+                            <img src="{{ asset('images/CSIT.jpg') }}" alt="Research Exam"
+                                class="w-full h-full object-cover aspect-[4/3] lg:aspect-auto group-hover:opacity-90 transition" />
+                        </div>
+                    </a>
+
+                    {{-- RIGHT: ฟอร์มล็อกอิน --}}
+                    <div class="p-8 lg:p-10">
+                        <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-6">เข้าสู่ระบบ</h1>
+
+                        <x-auth-session-status class="mb-4" :status="session('status')" />
+
+                        <form method="POST" action="{{ route('login') }}" id="loginForm" novalidate>
+                            @csrf
+                            <div class="mb-4">
+                                <label for="id"
+                                    class="block text-sm font-medium text-gray-700">รหัสผู้ใช้งาน</label>
+                                <input id="id" name="id" type="text" autocomplete="username"
+                                    value="{{ old('id') }}"
+                                    class="mt-1 block w-full rounded-lg border-gray-300 focus:border-red-500 focus:ring-red-500"
+                                    placeholder="รหัสนักศึกษาหรือรหัสอาจารย์" required>
+                                <x-input-error :messages="$errors->get('id')" class="mt-2" />
+                            </div>
+
+                            <div class="mb-5">
+                                <div class="flex items-center justify-between">
+                                    <label for="password"
+                                        class="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
+                                    @if (Route::has('password.request'))
+                                    <a href="{{ route('password.request') }}"
+                                        class="text-xs font-medium text-red-600 hover:text-red-700">ลืมรหัสผ่าน?</a>
+                                    @endif
+                                </div>
+
+                                <div class="mt-1 relative">
+                                    <input id="password" name="password" type="password"
+                                        autocomplete="current-password"
+                                        class="block w-full rounded-lg border-gray-300 pr-10 focus:border-red-500 focus:ring-red-500"
+                                        placeholder="รหัสผ่าน" required>
+                                    <button type="button" id="togglePwdBtn"
+                                        class="absolute inset-y-0 right-0 px-3 grid place-items-center text-gray-500 hover:text-gray-700"
+                                        aria-label="แสดงรหัสผ่าน">
+                                        <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8">
+                                            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                        <svg id="eyeOff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            class="w-5 h-5 hidden" fill="none" stroke="currentColor"
+                                            stroke-width="1.8">
+                                            <path
+                                                d="M3 3l18 18M10.6 10.6a3 3 0 1 0 4.8 4.8M9.9 4.2A10.6 10.6 0 0 1 12 4c7 0 11 8 11 8a17.7 17.7 0 0 1-5.1 5.7M6.1 6.1C3.5 7.8 1.7 10 1 12c0 0 4 8 11 8 1.6 0 3.1-.3 4.4-.8" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            </div>
+
+                            <button id="loginBtn" type="submit"
+                                class="w-full rounded-full py-3 font-semibold text-white
+                                       bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:text-gray-600 transition">
+                                เข้าสู่ระบบ
+                            </button>
+                        </form>
+
+                        @if (session('swal'))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                Swal.fire(@json(session('swal')));
+                            });
+                        </script>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    {{-- Mobile drawer --}}
+    <div id="drawer" class="fixed inset-0 bg-black/40 z-50 hidden">
+        <div class="absolute left-0 top-0 w-80 h-full bg-white shadow-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-semibold text-lg">หมวดหมู่</h3>
+                <button id="closeSidebar" class="p-2 rounded hover:bg-gray-100" aria-label="ปิดเมนู">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            @include('layouts.sidebar-guest')
         </div>
+    </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const idInput = document.getElementById('id');
+            const pwdInput = document.getElementById('password');
+            const btn = document.getElementById('loginBtn');
+            const toggle = document.getElementById('togglePwdBtn');
+            const eyeOpen = document.getElementById('eyeOpen');
+            const eyeOff = document.getElementById('eyeOff');
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            function updateBtn() {
+                btn.disabled = !(idInput.value.trim() && pwdInput.value.trim());
+            }
+            idInput.addEventListener('input', updateBtn);
+            pwdInput.addEventListener('input', updateBtn);
+            updateBtn();
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+            toggle?.addEventListener('click', () => {
+                const show = pwdInput.type === 'password';
+                pwdInput.type = show ? 'text' : 'password';
+                eyeOpen.classList.toggle('hidden', show);
+                eyeOff.classList.toggle('hidden', !show);
+            });
+        });
+    </script>
+</body>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</html>

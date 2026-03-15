@@ -40,12 +40,14 @@
         <div class="mt-4">
             <x-input-label for="m_id" :value="__('Department (m_id)')" />
             <select id="m_id" name="m_id" class="block mt-1 w-full" required>
-                {{-- <option value="">-- Select Department --</option> --}}
-                <option value="IT" {{ old('m_id') == 'IT' ? 'selected' : '' }}>IT</option>
-                <option value="CS" {{ old('m_id') == 'CS' ? 'selected' : '' }}>CS</option>
+                @foreach ($majors as $major)
+                    <option value="{{ $major->id }}" {{ old('m_id') == $major->id ? 'selected' : '' }}>
+                        {{ $major->m_name }} <!-- แสดงชื่อภาควิชา -->
+                    </option>
+                @endforeach
             </select>
             <x-input-error :messages="$errors->get('m_id')" class="mt-2" />
-        </div>
+        </div>        
 
         <!-- Advisor Type -->
         <div class="mt-4">

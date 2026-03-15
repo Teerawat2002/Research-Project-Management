@@ -11,7 +11,7 @@ class Student extends Authenticatable
 
     protected $table = 'students'; // ชื่อตารางในฐานข้อมูล
 
-    protected $fillable = ['s_id', 's_fname', 's_lname', 's_password', 'm_id', 'ac_id', 'status'];
+    protected $fillable = ['s_id', 's_fname', 's_lname', 's_password', 'm_id', 'status'];
 
     protected $hidden = [
         's_password', // ซ่อนรหัสผ่าน
@@ -33,13 +33,6 @@ class Student extends Authenticatable
         return $this->s_fname . ' ' . $this->s_lname;
     }
 
-    /**
-     * Relationship to the AcademicYear model.
-     */
-    public function academic_year()
-    {
-        return $this->belongsTo(AcademicYear::class, 'ac_id', 'id');
-    }
 
     /**
      * Relationship to the Major model.
@@ -50,12 +43,12 @@ class Student extends Authenticatable
     }
 
     public function project_group()
-	{
-		return $this->belongsTo(ProjectGroup::class, 'group_id');
-	}
+    {
+        return $this->belongsTo(ProjectGroup::class, 'group_id');
+    }
 
     public function group_members()
-	{
-		return $this->hasMany(GroupMember::class, 's_id');
-	}
+    {
+        return $this->hasMany(GroupMember::class, 's_id');
+    }
 }

@@ -1,26 +1,72 @@
 import './bootstrap';
 
-import Alpine from 'alpinejs';
-import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.css"; // Import CSS ของ Flatpickr
+// ===== jQuery =====
+import $ from 'jquery';
+window.$ = window.jQuery = $;
 
-// เริ่มต้น Alpine.js
+// ===== Select2 (ESM-safe) =====
+import select2 from 'select2';
+import 'select2/dist/css/select2.css';
+select2($);
+
+// ===== Alpine =====
+import Alpine from 'alpinejs';
 window.Alpine = Alpine;
 Alpine.start();
 
-// เริ่มต้น Flatpickr เมื่อ DOM โหลดเสร็จ
+// ===== flatpickr =====
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.css";
+
 document.addEventListener("DOMContentLoaded", function () {
-    const startPicker = flatpickr("#datepicker-range-start", {
-        dateFormat: "Y-m-d", // รูปแบบวันที่ (เช่น 2024-12-01)
-        onChange: function (selectedDates, dateStr) {
-            endPicker.set("minDate", dateStr); // กำหนด minDate สำหรับ end_date
+
+    // flatpickr
+    const startEl = document.querySelector("#datepicker-range-start");
+    const endEl = document.querySelector("#datepicker-range-end");
+
+    if (startEl && endEl) {
+        const startPicker = flatpickr(startEl, {
+            dateFormat: "Y-m-d",
+            onChange: (_, dateStr) => endPicker.set("minDate", dateStr),
+        });
+
+        const endPicker = flatpickr(endEl, {
+            dateFormat: "Y-m-d",
+            onChange: (_, dateStr) => startPicker.set("maxDate", dateStr),
+        });
+    }
+
+    // Select2
+    if (!$.fn.select2) {
+        console.error('Select2 not loaded');
+        return;
+    }
+
+    // select2 ธรรมดา (ไม่ search)
+    $('.select2').select2({
+        width: '100%',
+        placeholder: function () {
+            return $(this).data('placeholder');
         },
+        // allowClear: true,
+        minimumResultsForSearch: Infinity
     });
 
-    const endPicker = flatpickr("#datepicker-range-end", {
-        dateFormat: "Y-m-d", // รูปแบบวันที่
-        onChange: function (selectedDates, dateStr) {
-            startPicker.set("maxDate", dateStr); // กำหนด maxDate สำหรับ start_date
+    // select2 ที่ต้องค้นหา
+    $('.select2-search').select2({
+        width: '100%',
+        placeholder: function () {
+            return $(this).data('placeholder');
         },
+        // allowClear: true
+    });
+
+    // select2 แบบเลือกหลายค่า
+    $('.select2-multi').select2({
+        width: '100%',
+        placeholder: function () {
+            return $(this).data('placeholder');
+        },
+        // allowClear: true
     });
 });

@@ -38,11 +38,12 @@ class Kernel extends HttpKernel
     /**
      * Route Middleware
      */
-    protected $routeMiddleware = [
+    // protected $routeMiddleware = [
+    protected $middlewareAliases = [
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        // 'admin.advisor' => \App\Http\Middleware\EnsureAdminAdvisor::class,
+        'advisor.admin' => \App\Http\Middleware\AdvisorIsAdmin::class,
     ];
 }

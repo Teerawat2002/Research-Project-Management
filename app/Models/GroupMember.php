@@ -8,6 +8,8 @@ class GroupMember extends Model
 {
     protected $table = 'group_members';
 
+	protected $fillable = ['group_id', 's_id', 'grade'];
+
 
 	public function project_group()
 	{
@@ -18,4 +20,9 @@ class GroupMember extends Model
 	{
 		return $this->belongsTo(Student::class, 's_id');
 	}
+
+	// public function member_grade_details()
+	// {
+	// 	return $this->hasMany(MemberGradeDetail::class);
+	// }
 }

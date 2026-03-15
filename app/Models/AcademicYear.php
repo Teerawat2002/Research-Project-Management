@@ -20,4 +20,9 @@ class AcademicYear extends Model
 	{
 		return $this->hasMany(Student::class, 'ac_id');
 	}
+
+	public function project_groups()
+	{
+		return $this->hasMany(ProjectGroup::class, 'ac_id');
+	}
 }

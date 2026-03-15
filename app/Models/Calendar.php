@@ -9,6 +9,8 @@ class Calendar extends BaseCalendar
 {
 	use HasFactory;
 
+	protected $table = 'calendar';
+
 	protected $fillable = [
 		'ac_id',
 		'start_date',

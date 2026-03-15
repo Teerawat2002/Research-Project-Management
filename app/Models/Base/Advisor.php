@@ -6,6 +6,7 @@
 
 namespace App\Models\Base;
 
+use App\Models\InviGroupMember;
 use App\Models\Major;
 use App\Models\Propose;
 use Carbon\Carbon;
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * 
  * @property Major $major
+ * @property Collection|InviGroupMember[] $invi_group_members
  * @property Collection|Propose[] $proposes
  *
  * @package App\Models\Base
@@ -43,6 +45,11 @@ class Advisor extends Model
 	public function major()
 	{
 		return $this->belongsTo(Major::class, 'm_id');
+	}
+
+	public function invi_group_members()
+	{
+		return $this->hasMany(InviGroupMember::class, 'a_id');
 	}
 
 	public function proposes()

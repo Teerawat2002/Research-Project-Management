@@ -42,6 +42,6 @@ class SubTopic extends Model
 
 	public function subsub_topics()
 	{
-		return $this->hasMany(SubsubTopic::class, 'stopic_id', 'mtopic_id');
+		return $this->hasMany(SubsubTopic::class, 'stopic_id');
 	}
 }

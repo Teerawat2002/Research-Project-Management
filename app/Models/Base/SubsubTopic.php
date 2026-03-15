@@ -34,6 +34,6 @@ class SubsubTopic extends Model
 
 	public function sub_topic()
 	{
-		return $this->belongsTo(SubTopic::class, 'stopic_id', 'mtopic_id');
+		return $this->belongsTo(SubTopic::class, 'stopic_id');
 	}
 }

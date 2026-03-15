@@ -30,14 +30,6 @@ class Calendar extends Model
 {
 	protected $table = 'calendar';
 
-	protected $fillable = [
-		'ac_id',
-		'start_date',
-		'end_date',
-		'title',
-		'description'
-	];
-
 	protected $casts = [
 		'ac_id' => 'int',
 		'start_date' => 'datetime',

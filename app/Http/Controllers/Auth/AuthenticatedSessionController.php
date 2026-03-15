@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
+use App\Models\Advisor;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,16 +66,62 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
+    // public function store(LoginRequest $request): RedirectResponse
+    // {
+    //     $credentials = $request->only(['id', 'password']);
+    //     if (Auth::guard('students')->attempt(['s_id' => $credentials['id'], 'password' => $credentials['password']])) {
+    //         $request->session()->regenerate();
+    //         return redirect()->route('student.group.index');
+    //     }
+    //     if (Auth::guard('advisors')->attempt(['a_id' => $credentials['id'], 'password' => $credentials['password']])) {
+    //         $request->session()->regenerate();
+    //         $advisor = Auth::guard('advisors')->user();
+    //         switch ($advisor->a_type) {
+    //             case 'admin':
+    //                 return redirect()->route('admin.advisor.index');
+    //             case 'teacher':
+    //                 return redirect()->route('teacher.calendar.index');
+    //             case 'advisor':
+    //                 return redirect()->route('advisor.propose.index');
+    //             default:
+    //                 return redirect()->route('/');
+    //         }
+    //     }
+    //     return back()->withErrors([
+    //         'login' => 'Invalid ID or password.',
+    //     ]);
+    // }
     public function store(LoginRequest $request): RedirectResponse
     {
-        $credentials = $request->only(['id', 'password']);
-        if (Auth::guard('students')->attempt(['s_id' => $credentials['id'], 'password' => $credentials['password']])) {
+        $request->validate([
+            'id'       => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $id = $request->input('id');
+        $pw = $request->input('password');
+
+        // มีรหัสนี้ในตารางไหนบ้าง?
+        $studentExists = Student::where('s_id', $id)->exists();
+        $advisorExists = Advisor::where('a_id', $id)->exists();
+
+        // 1) ลองล็อกอินเป็น student
+        if (Auth::guard('students')->attempt(['s_id' => $id, 'password' => $pw])) {
             $request->session()->regenerate();
             return redirect()->route('student.group.index');
         }
-        if (Auth::guard('advisors')->attempt(['a_id' => $credentials['id'], 'password' => $credentials['password']])) {
+        // ถ้าพบรหัสใน students แต่ attempt ไม่ผ่าน => รหัสผ่านผิด
+        if ($studentExists) {
+            return back()
+                ->withErrors(['password' => 'รหัสผ่านไม่ถูกต้อง'])
+                ->withInput();
+        }
+
+        // 2) ลองล็อกอินเป็น advisor
+        if (Auth::guard('advisors')->attempt(['a_id' => $id, 'password' => $pw])) {
             $request->session()->regenerate();
             $advisor = Auth::guard('advisors')->user();
+
             switch ($advisor->a_type) {
                 case 'admin':
                     return redirect()->route('admin.advisor.index');
@@ -82,13 +130,22 @@ class AuthenticatedSessionController extends Controller
                 case 'advisor':
                     return redirect()->route('advisor.propose.index');
                 default:
-                    return redirect()->route('dashboard');
+                    return redirect()->route('project.index');
             }
         }
-        return back()->withErrors([
-            'login' => 'Invalid ID or password.',
-        ]);
+        // ถ้าพบรหัสใน advisors แต่ attempt ไม่ผ่าน => รหัสผ่านผิด
+        if ($advisorExists) {
+            return back()
+                ->withErrors(['password' => 'รหัสผ่านไม่ถูกต้อง'])
+                ->withInput();
+        }
+
+        // ไม่พบรหัสในทั้งสองตาราง => รหัสผู้ใช้ไม่ถูกต้อง
+        return back()
+            ->withErrors(['id' => 'ไม่พบผู้ใช้ด้วยรหัสนี้'])
+            ->withInput();
     }
+
     public function studentLogout(Request $request)
     {
         if (Auth::guard('students')->check()) {
@@ -98,7 +155,7 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerateToken();
         }
 
-        return redirect()->route('welcome')->with('success', 'You have been logged out.');
+        return redirect()->route('project.index')->with('success', 'You have been logged out.');
     }
 
     public function advisorLogout(Request $request)
@@ -110,6 +167,6 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerateToken();
         }
 
-        return redirect()->route('welcome')->with('success', 'You have been logged out.');
+        return redirect()->route('project.index')->with('success', 'You have been logged out.');
     }
 }
