@@ -90,7 +90,7 @@
                                         @endif
 
                                         {{-- ปุ่ม Action --}}
-                                        <td class="px-6 py-4 text-center">
+                                        <td class="px-6 py-4 text-center truncate">
                                             {{-- แก้ไขได้เฉพาะถ้ายังรออนุมัติ --}}
 
                                             @if ($revision->status === '0')
