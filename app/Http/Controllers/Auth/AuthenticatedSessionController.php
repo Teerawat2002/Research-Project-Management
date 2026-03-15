@@ -16,8 +16,13 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        // เช็คว่านักศึกษา, อาจารย์ หรือผู้ใช้ทั่วไป ล็อกอินอยู่หรือไม่
+        if (Auth::guard('students')->check() || Auth::guard('advisors')->check() || Auth::check()) {
+            return redirect()->route('dashboard');
+            // หรือถ้าใช้ path: return redirect('/dashboard');
+        }
         return view('auth.login');
     }
 
