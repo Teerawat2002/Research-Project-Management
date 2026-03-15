@@ -1,34 +1,3 @@
-{{-- <aside :class="open ? 'block' : 'hidden sm:block'" class="w-64 bg-white border-r border-gray-200 min-h-screen fixed sm:relative z-50">
-    <div class="h-16 flex items-center justify-center border-b border-gray-200">
-        <a href="{{ route('dashboard') }}">
-            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-        </a>
-        <div>{{ Auth::user()->name }} ({{ Auth::guard('advisors')->user()->a_type }})</div>
-    </div>
-
-    <nav class="mt-4 flex flex-col space-y-2 px-4">
-        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="block py-2 px-4 hover:bg-gray-100">
-            {{ __('Dashboard') }}
-        </x-nav-link>
-
-        <!-- Add more links or dropdowns as needed -->
-        <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')" class="block py-2 px-4 hover:bg-gray-100">
-            {{ __('Profile') }}
-        </x-nav-link>
-    </nav>
-
-    <div class="absolute bottom-4 w-full">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <x-nav-link :href="route('logout')" class="block py-2 px-4 hover:bg-red-100 text-red-600"
-                onclick="event.preventDefault();
-                            this.closest('form').submit();">
-                {{ __('Log Out') }}
-            </x-nav-link>
-        </form>
-    </div>
-</aside> --}}
-
 <aside id="logo-sidebar"
     class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white border-r border-gray-200 sm:translate-x-0 transition-transform dark:bg-gray-800 dark:border-gray-700"
     x-bind:class="open ? 'translate-x-0' : '-translate-x-full'" aria-label="Sidebar">
@@ -113,13 +82,23 @@
                     </a>
                 </li>
 
-                <!-- Majors -->
+                <!-- Courses -->
                 <li>
                     <a href="{{ route('admin.course.index') }}"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                         <i
                             class="fas fa-solid fa-bookmark text-gray-500 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"></i>
                         <span class="flex-1 ms-3 whitespace-nowrap">รายวิชาโครงงาน</span>
+                    </a>
+                </li>
+
+                <!-- Project Type -->
+                <li>
+                    <a href="{{ route('admin.project-type.index') }}"
+                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i
+                            class="fas fa-solid fa-layer-group text-gray-500 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"></i>
+                        <span class="flex-1 ms-3 whitespace-nowrap">ประเภทโครงงานวิจัย</span>
                     </a>
                 </li>
 

@@ -116,6 +116,15 @@ Route::middleware(['auth:advisors', AdvisorIsAdmin::class])->group(function () {
         Route::delete('delete/{id}', [AdminController::class, 'courseDelete'])->name('delete');
     });
 
+    Route::prefix('admin/project-type')->name('admin.project-type.')->group(function () {
+        Route::get('index', [AdminController::class, 'projectTypeIndex'])->name('index');
+        Route::get('create', [AdminController::class, 'projectTypeCreate'])->name('create');
+        Route::post('store', [AdminController::class, 'projectTypeStore'])->name('store');
+        Route::get('edit/{id}', [AdminController::class, 'projectTypeEdit'])->name('edit');
+        Route::put('update/{id}', [AdminController::class, 'projectTypeUpdate'])->name('update');
+        Route::delete('delete/{id}', [AdminController::class, 'projectTypeDelete'])->name('delete');
+    });
+
     Route::prefix('admin/topic')->name('admin.topic.')->group(function () {
         //maintopic
         Route::get('maintopic/index', [AdminController::class, 'mainindex'])->name('maintopic.index');

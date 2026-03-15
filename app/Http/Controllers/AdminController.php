@@ -434,6 +434,75 @@ class AdminController extends Controller
     }
 
 
+    // Project Type
+    public function projectTypeIndex(Request $request)
+    {
+        $advisor = Auth::guard('advisors')->user();
+        $search = $request->input('search'); // รับค่าจากช่องค้นหา
+
+        $projectTypes = ProjectType::query()
+            ->when($search, function ($query, $search) {
+                // ค้นหาจากคอลัมน์ชื่อประเภทโครงงานวิจัย
+                return $query->where('name', 'like', "%{$search}%");
+            })
+            ->orderBy('id', 'asc')
+            ->paginate(10)
+            ->withQueryString(); // สำคัญมาก: ทำให้พารามิเตอร์ ?search=... ไม่หายเวลาคลิกหน้าถัดไป
+
+        return view('admin.project-type.index', compact('advisor', 'projectTypes'));
+    }
+
+    public function projectTypeCreate()
+    {
+        return view('admin.project-type.create');
+    }
+
+    public function projectTypeStore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'   => 'required|string|max:255',
+        ]);
+
+        ProjectType::create([
+            'name'   => $validated['name'],
+        ]);
+
+        return redirect()
+            ->route('admin.project-type.index')
+            ->with('success', 'เพิ่มประเภทโครงการเรียบร้อยแล้ว');
+    }
+
+    public function projectTypeEdit($id)
+    {
+        $projectType = ProjectType::findOrFail($id);
+        return view('admin.project-type.edit', compact('projectType'));
+    }
+
+    public function projectTypeUpdate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255' . $id,
+        ]);
+
+        $projectType = ProjectType::findOrFail($id);
+        $projectType->update(['name' => $validated['name']]);
+
+        return redirect()
+            ->route('admin.project-type.index')
+            ->with('success', 'แก้ไขประเภทโครงการเรียบร้อยแล้ว');
+    }
+
+    // ลบ
+    public function projectTypeDelete($id)
+    {
+        $projectType = ProjectType::findOrFail($id);
+        $projectType->delete();
+
+        return redirect()
+            ->route('admin.project-type.index')
+            ->with('success', 'ลบประเภทโครงการเรียบร้อยแล้ว');
+    }
+
     // Major setting
     // public function majorIndex()
     // {
